@@ -313,23 +313,35 @@ const EVENTS={
   6:[
     {hl:'PANDEMIC PARALYZES ECONOMY',sub:'Consumer spending collapses as businesses shutter nationwide.',shock:{u:4.0,p:-1.0,g:-3.5}},
     {hl:'BANKING CRISIS — CREDIT MARKETS FREEZE',sub:'Major bank failures halt lending across the economy.',shock:{u:3.0,p:-0.8,g:-3.0}},
-    {hl:'HOUSING BUBBLE BURSTS',sub:'Home values crater; consumer spending and construction grind to a halt.',shock:{u:2.8,p:-0.8,g:-2.8}}
+    {hl:'HOUSING BUBBLE BURSTS',sub:'Home values crater; consumer spending and construction grind to a halt.',shock:{u:2.8,p:-0.8,g:-2.8}},
+    {hl:'BANK RUNS SWEEP THE NATION',sub:'Widespread loss of confidence triggers mass withdrawals; thousands of banks close and credit vanishes overnight.',shock:{u:3.8,p:-1.2,g:-4.0}},
+    {hl:'EQUITY MARKETS COLLAPSE — WEALTH EVAPORATES',sub:'A speculative bubble bursts, wiping out household savings and triggering a sharp pullback in consumer and business spending.',shock:{u:3.2,p:-1.0,g:-3.4}},
+    {hl:'CORPORATE DEBT CRISIS HALTS INVESTMENT',sub:'A wave of high-profile bankruptcies exposes overleveraged balance sheets, freezing corporate borrowing and capital spending.',shock:{u:2.6,p:-0.7,g:-2.9}}
   ],
   // Q14 — inflation shock
   14:[
     {hl:'DEMAND SURGE — ECONOMY OVERHEATING',sub:'Years of expansion push prices well above the Fed\'s target.',shock:{u:-1.2,p:3.2,g:1.8}},
     {hl:'WAR MOBILIZATION DRIVES INFLATION',sub:'Defense spending surge tightens the labor market and pushes prices sharply higher.',shock:{u:-1.4,p:2.8,g:1.5}},
-    {hl:'CONSUMER CREDIT BOOM OVERHEATS SPENDING',sub:'Easy lending fuels a consumption surge, pushing inflation well past target.',shock:{u:-1.0,p:2.6,g:1.6}}
+    {hl:'CONSUMER CREDIT BOOM OVERHEATS SPENDING',sub:'Easy lending fuels a consumption surge, pushing inflation well past target.',shock:{u:-1.0,p:2.6,g:1.6}},
+    {hl:'LARGE-SCALE SOCIAL PROGRAMS FUEL DEMAND',sub:'A sweeping expansion of government entitlements floods the economy with spending, pushing unemployment to historic lows but igniting inflation.',shock:{u:-1.5,p:3.0,g:1.7}},
+    {hl:'POST-WAR SPENDING BOOM STRAINS SUPPLY',sub:'Rapid demobilization meets surging consumer demand; industry cannot keep pace and prices spike across goods markets.',shock:{u:-1.1,p:3.4,g:1.6}},
+    {hl:'COMMODITY BOOM LIFTS GROWTH AND PRICES',sub:'A global surge in raw material demand drives up input costs economy-wide, boosting output but stoking broad inflationary pressure.',shock:{u:-0.9,p:2.8,g:1.9}}
   ],
   // Q22 — stagflation (the hard one — no clean answer)
   22:[
     {hl:'OIL PRICES TRIPLE — STAGFLATION LOOMS',sub:'Energy shock hits supply chains: unemployment AND inflation rising simultaneously. No clean answer — discuss with your partner.',shock:{u:2.2,p:3.5,g:-2.0}},
-    {hl:'GLOBAL SUPPLY CHAIN MELTDOWN',sub:'Port closures spike costs while output falls. Both unemployment and inflation worsen at once.',shock:{u:1.8,p:2.8,g:-1.8}}
+    {hl:'GLOBAL SUPPLY CHAIN MELTDOWN',sub:'Port closures spike costs while output falls. Both unemployment and inflation worsen at once.',shock:{u:1.8,p:2.8,g:-1.8}},
+    {hl:'ENERGY EMBARGO CRIPPLES INDUSTRY',sub:'A sudden cutoff of fuel imports forces rationing and factory slowdowns — output falls while energy prices spiral upward.',shock:{u:2.4,p:3.8,g:-2.2}},
+    {hl:'CROP FAILURES DRIVE FOOD PRICE SURGE',sub:'Widespread agricultural shortfalls push food costs sharply higher, squeezing household budgets and slowing broader consumer spending.',shock:{u:1.6,p:2.6,g:-1.6}},
+    {hl:'CURRENCY CRISIS RAISES IMPORT COSTS',sub:'A sharp depreciation of the domestic currency makes imported goods far more expensive, lifting inflation while weakening real purchasing power and growth.',shock:{u:2.0,p:3.2,g:-1.9}}
   ],
   // Q30 — late recession (tests whether players remember what worked the first time)
   30:[
     {hl:'FINANCIAL CONTAGION SPREADS FROM ABROAD',sub:'A foreign debt crisis ripples into domestic credit markets, freezing investment.',shock:{u:3.2,p:-0.9,g:-3.0}},
-    {hl:'TECH BUBBLE BURSTS — INVESTMENT COLLAPSES',sub:'Overvalued asset prices crash; business investment and consumer wealth plummet.',shock:{u:2.6,p:-0.7,g:-2.6}}
+    {hl:'TECH BUBBLE BURSTS — INVESTMENT COLLAPSES',sub:'Overvalued asset prices crash; business investment and consumer wealth plummet.',shock:{u:2.6,p:-0.7,g:-2.6}},
+    {hl:'PREMATURE AUSTERITY STALLS RECOVERY',sub:'Deficit fears prompt spending cuts and tax hikes too soon — consumer demand weakens and the economy tips back into contraction.',shock:{u:3.0,p:-0.8,g:-2.8}},
+    {hl:'SAVINGS AND LOAN SECTOR IMPLODES',sub:'Hundreds of undercapitalized lending institutions fail simultaneously, triggering a credit crunch and collapsing real estate investment.',shock:{u:2.8,p:-0.6,g:-2.5}},
+    {hl:'EXTERNAL DEMAND COLLAPSES — EXPORTS FALL',sub:'A sharp global slowdown slashes demand for domestic exports, dragging down industrial output and pushing unemployment higher.',shock:{u:2.4,p:-0.7,g:-2.7}}
   ]
 };
 const GCFG={
@@ -674,12 +686,17 @@ function endGame(){
 function startGame(){
   document.getElementById('intro').style.display='none';
   document.getElementById('app').style.display='flex';
+  const btn=document.getElementById('advanceBtn');
+  btn.disabled=false;
+  document.getElementById('next-q').textContent='1';
   initState(); render(); renderSliders();
 }
 function resetGame(){
   document.getElementById('endscreen').style.display='none';
   document.getElementById('intro').style.display='flex';
   document.getElementById('app').style.display='none';
+  document.getElementById('next-q').textContent='1';
+  document.getElementById('advanceBtn').disabled=false;
   document.getElementById('paper-idle').style.display='block';
   document.getElementById('paper-event').style.display='none';
   document.getElementById('paper-idle').textContent='No major events — adjust policy as needed, then advance the quarter.';
