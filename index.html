@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECON COMMAND CENTER</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --cream:#f4efe4;
+  --paper:#fffdf8;
+  --ink:#1a1f2e;
+  --ink2:#3a4154;
+  --ink3:#7a8299;
+  --rule:#d8d2c6;
+  --gold:#c47d1a;
+  --gold-lt:#fdf0d0;
+  --teal:#0e7c6b;
+  --teal-lt:#d0f0eb;
+  --red:#b83225;
+  --red-lt:#fde8e6;
+  --green:#1a7a4a;
+  --green-lt:#d6f0e3;
+  --warn:#b85c00;
+  --warn-lt:#fef0d6;
+}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── INTRO ── */
+#intro{position:fixed;inset:0;background:var(--cream);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px;}
+.intro-wrap{max-width:700px;width:100%;background:var(--paper);border:1.5px solid var(--rule);border-radius:10px;padding:42px 48px;}
+.eyebrow{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.2em;color:var(--ink3);text-transform:uppercase;margin-bottom:10px;}
+.intro-title{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,4vw,2.7rem);font-weight:900;color:var(--ink);line-height:1.1;}
+.gold-rule{width:48px;height:3px;background:var(--gold);margin:18px 0 20px;}
+.intro-body{font-size:.84rem;color:var(--ink2);line-height:1.8;margin-bottom:26px;}
+.player-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+.pc{padding:16px 18px;border-radius:7px;border:1px solid var(--rule);}
+.pc.f{background:var(--gold-lt);border-color:#dfc868;}
+.pc.m{background:var(--teal-lt);border-color:#8dd5c8;}
+.pc-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:4px;}
+.pc.f .pc-name{color:var(--gold);}
+.pc.m .pc-name{color:var(--teal);}
+.pc-role{font-size:.68rem;color:var(--ink3);margin-bottom:10px;}
+.krow{display:flex;align-items:center;gap:7px;font-size:.68rem;color:var(--ink2);margin:3px 0;}
+.k{background:white;border:1px solid var(--rule);border-bottom:2px solid #bbb;padding:1px 7px;border-radius:3px;font-family:'DM Mono',monospace;font-size:.7rem;}
+.targets{background:var(--green-lt);border:1px solid #b8ddc8;border-radius:6px;padding:10px 16px;font-size:.72rem;color:var(--green);display:flex;gap:18px;flex-wrap:wrap;margin-bottom:26px;}
+.targets span strong{color:var(--ink);}
+.btn-primary{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;padding:13px 42px;background:var(--ink);color:white;border:none;border-radius:6px;cursor:pointer;transition:background .15s;}
+.btn-primary:hover{background:var(--ink2);}
+
+/* ── HEADER ── */
+#hdr{background:var(--ink);color:white;padding:11px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.hdr-left .h-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;}
+.hdr-left .h-sub{font-size:.58rem;color:#8899aa;letter-spacing:.14em;text-transform:uppercase;margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:14px;}
+.qchip{font-family:'DM Mono',monospace;font-size:.72rem;background:rgba(255,255,255,.1);padding:5px 13px;border-radius:20px;letter-spacing:.05em;}
+.spill{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;padding:4px 12px;border-radius:20px;font-weight:500;}
+.sp-ok{background:#0e3d22;color:#6effa8;}
+.sp-warn{background:#6b3800;color:#ffd090;animation:blink 1.1s infinite;}
+.sp-crisis{background:#6b0e00;color:#ffb0a8;animation:blink .65s infinite;}
+@keyframes blink{50%{opacity:.45;}}
+
+/* ── LAYOUT ── */
+#game-main{display:grid;grid-template-columns:210px 1fr 210px;flex:1;padding:14px;gap:12px;align-items:start;}
+
+/* Side panels */
+.side{background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;overflow:hidden;}
+.side-hdr{padding:12px 16px 10px;border-bottom:1px solid var(--rule);}
+.side-hdr.f{background:var(--gold-lt);}
+.side-hdr.m{background:var(--teal-lt);}
+.sh-lbl{font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:2px;}
+.sh-lbl.f{color:var(--gold);}
+.sh-lbl.m{color:var(--teal);}
+.sh-title{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:700;}
+.side-body{padding:14px 14px;display:flex;flex-direction:column;gap:13px;}
+.sl-card{}
+.sl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.sl-name{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);}
+.sl-keys{font-size:.58rem;color:var(--ink3);background:var(--cream);border:1px solid var(--rule);padding:2px 7px;border-radius:3px;}
+.sl-track{height:11px;background:var(--cream);border:1px solid var(--rule);border-radius:6px;overflow:hidden;margin-bottom:5px;}
+.sl-fill{height:100%;border-radius:6px;transition:width .1s ease;}
+.sf-f{background:linear-gradient(90deg,#e8c878,var(--gold));}
+.sf-m{background:linear-gradient(90deg,#7dd9cc,var(--teal));}
+.sl-lbls{display:flex;justify-content:space-between;font-size:.56rem;color:var(--ink3);}
+.sl-lbls span:nth-child(2){font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink);font-weight:500;}
+.stance{text-align:center;font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;padding:7px;border-radius:5px;}
+.st-e{background:var(--green-lt);color:var(--green);}
+.st-c{background:var(--red-lt);color:var(--red);}
+.st-n{background:var(--cream);color:var(--ink3);}
+
+/* Center */
+#center{display:flex;flex-direction:column;gap:11px;}
+.ind-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.ind{background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;padding:13px 10px;text-align:center;}
+.ind-lbl{font-family:'DM Mono',monospace;font-size:.53rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);margin-bottom:3px;}
+.ind-num{font-family:'Playfair Display',serif;font-size:2.1rem;font-weight:900;line-height:1;margin-bottom:3px;}
+.ind-num.good{color:var(--green);}
+.ind-num.warn{color:var(--warn);}
+.ind-num.bad{color:var(--red);}
+.ind-tgt{font-size:.55rem;color:var(--ink3);}
+
+.graph-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.graph-card{background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;padding:9px 9px 5px;}
+.graph-lbl{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);text-align:center;margin-bottom:5px;}
+canvas{width:100%;height:82px;display:block;}
+
+/* Newspaper */
+#paper{background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;padding:13px 18px;}
+.paper-mast{font-family:'Playfair Display',serif;font-size:.62rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);text-align:center;border-bottom:1px solid var(--rule);padding-bottom:7px;margin-bottom:10px;}
+.paper-hl{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:900;color:var(--ink);line-height:1.2;margin-bottom:4px;}
+.paper-sub{font-size:.7rem;color:var(--ink2);font-style:italic;line-height:1.5;}
+.paper-idle{font-size:.75rem;color:var(--ink3);text-align:center;padding:6px 0;font-style:italic;}
+.paper-flash{animation:pflash .5s ease;}
+@keyframes pflash{0%{background:#fffbe0;}100%{background:var(--paper);}}
+
+/* Bottom row */
+#bottom-row{display:flex;align-items:center;gap:12px;}
+#advanceBtn{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:700;padding:11px 26px;background:var(--ink);color:white;border:none;border-radius:6px;cursor:pointer;transition:background .15s;white-space:nowrap;flex-shrink:0;}
+#advanceBtn:hover{background:var(--ink2);}
+#advanceBtn:disabled{background:var(--rule);color:var(--ink3);cursor:not-allowed;}
+.coord-box{flex:1;background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;padding:9px 14px;display:flex;align-items:center;gap:10px;min-width:0;}
+.coord-lbl{font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);white-space:nowrap;}
+.coord-track{flex:1;height:8px;background:var(--cream);border:1px solid var(--rule);border-radius:4px;overflow:hidden;min-width:0;}
+.coord-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--red),var(--warn),var(--green));transition:width .4s ease;}
+.coord-pct{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink);white-space:nowrap;}
+.coord-note{font-size:.6rem;white-space:nowrap;}
+
+/* ── END SCREEN ── */
+#endscreen{display:none;position:fixed;inset:0;background:rgba(244,239,228,.92);align-items:center;justify-content:center;z-index:400;padding:20px;}
+.end-wrap{max-width:580px;width:100%;background:var(--paper);border:1.5px solid var(--rule);border-radius:10px;padding:42px 44px;text-align:center;}
+.end-title{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;color:var(--ink);margin-bottom:6px;}
+.end-sub{font-size:.62rem;color:var(--ink3);letter-spacing:.15em;text-transform:uppercase;margin-bottom:28px;}
+.grade-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:22px;}
+.grade-card{border:1.5px solid var(--rule);border-radius:8px;padding:18px 10px;}
+.gc-lbl{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;}
+.gc-letter{font-family:'Playfair Display',serif;font-size:3.2rem;font-weight:900;line-height:1;margin-bottom:8px;}
+.gA{color:var(--green);}
+.gB{color:#3a7a1a;}
+.gC{color:var(--warn);}
+.gD{color:#a04010;}
+.gF{color:var(--red);}
+.gc-detail{font-size:.58rem;color:var(--ink3);line-height:1.55;}
+.end-summary{font-size:.73rem;color:var(--ink2);line-height:1.8;background:var(--cream);border-radius:6px;padding:12px 16px;text-align:left;margin-bottom:24px;}
+</style>
+</head>
+<body>
+
+<!-- ══════ INTRO ══════ -->
+<div id="intro">
+  <div class="intro-wrap">
+    <div class="eyebrow">Macroeconomics Simulation · 2 Players</div>
+    <div class="intro-title">Econ Command Center</div>
+    <div class="gold-rule"></div>
+    <p class="intro-body">One player controls <strong>fiscal policy</strong> (President + Congress). The other controls <strong>monetary policy</strong> (Federal Reserve). Economic events will shock the economy over 36 rounds — adjust your sliders, discuss with your partner, and keep all three indicators in the green zone.</p>
+    <div class="player-grid">
+      <div class="pc f">
+        <div class="pc-name">Fiscal Policy</div>
+        <div class="pc-role">President &amp; Congress — left side of keyboard</div>
+        <div class="krow"><span class="k">Q</span><span class="k">A</span>&nbsp; Tax Rate &nbsp;↑ / ↓</div>
+        <div class="krow"><span class="k">W</span><span class="k">S</span>&nbsp; Gov't Spending &nbsp;↑ / ↓</div>
+      </div>
+      <div class="pc m">
+        <div class="pc-name">Monetary Policy</div>
+        <div class="pc-role">Federal Reserve — right side of keyboard</div>
+        <div class="krow"><span class="k">O</span><span class="k">L</span>&nbsp; Money Supply &nbsp;↑ / ↓</div>
+        <div class="krow"><span class="k">I</span><span class="k">K</span>&nbsp; Interest Rate &nbsp;↑ / ↓</div>
+      </div>
+    </div>
+    <div class="targets">
+      <span><strong>Unemployment:</strong> 3.5–5.5%</span>
+      <span><strong>Inflation:</strong> 1–3%</span>
+      <span><strong>RGDP Growth:</strong> 2–4%</span>
+      <span style="color:var(--ink3)">36 rounds</span>
+    </div>
+    <button class="btn-primary" onclick="startGame()">Begin Simulation →</button>
+  </div>
+</div>
+
+<!-- ══════ APP ══════ -->
+<div id="app" style="display:none;flex-direction:column;min-height:100vh;">
+  <div id="hdr">
+    <div class="hdr-left">
+      <div class="h-title">Econ Command Center</div>
+      <div class="h-sub">Macroeconomics Policy Simulator</div>
+    </div>
+    <div class="hdr-right">
+      <div class="qchip">Quarter <span id="qtr-num">0</span> / 36</div>
+      <div id="status-pill" class="spill sp-ok">Stable</div>
+    </div>
+  </div>
+
+  <div id="game-main">
+
+    <!-- Fiscal -->
+    <div class="side">
+      <div class="side-hdr f">
+        <div class="sh-lbl f">Player 1</div>
+        <div class="sh-title">Fiscal Policy</div>
+      </div>
+      <div class="side-body">
+        <div class="sl-card">
+          <div class="sl-top"><span class="sl-name">Tax Rate</span><span class="sl-keys">Q ↑ &nbsp; A ↓</span></div>
+          <div class="sl-track"><div class="sl-fill sf-f" id="tax-fill" style="width:50%"></div></div>
+          <div class="sl-lbls"><span>Low</span><span id="tax-val">50</span><span>High</span></div>
+        </div>
+        <div class="sl-card">
+          <div class="sl-top"><span class="sl-name">Gov't Spending</span><span class="sl-keys">W ↑ &nbsp; S ↓</span></div>
+          <div class="sl-track"><div class="sl-fill sf-f" id="spend-fill" style="width:50%"></div></div>
+          <div class="sl-lbls"><span>Austerity</span><span id="spend-val">50</span><span>Stimulus</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center -->
+    <div id="center">
+      <div class="ind-row">
+        <div class="ind"><div class="ind-lbl">Unemployment</div><div class="ind-num good" id="unemp-val">5.0%</div><div class="ind-tgt">Target 3.5–5.5%</div></div>
+        <div class="ind"><div class="ind-lbl">Inflation</div><div class="ind-num good" id="infl-val">2.0%</div><div class="ind-tgt">Target 1–3%</div></div>
+        <div class="ind"><div class="ind-lbl">RGDP Growth</div><div class="ind-num good" id="rgdp-val">2.5%</div><div class="ind-tgt">Target 2–4%</div></div>
+      </div>
+      <div class="graph-row">
+        <div class="graph-card"><div class="graph-lbl">Unemployment %</div><canvas id="g-unemp"></canvas></div>
+        <div class="graph-card"><div class="graph-lbl">Inflation %</div><canvas id="g-infl"></canvas></div>
+        <div class="graph-card"><div class="graph-lbl">RGDP Growth %</div><canvas id="g-rgdp"></canvas></div>
+      </div>
+      <div class="graph-card" style="padding:9px 12px 6px;">
+        <div class="graph-lbl">Phillips Curve — Unemployment vs. Inflation (each dot = one quarter)</div>
+        <canvas id="g-phillips" style="height:90px;"></canvas>
+      </div>
+      <div id="paper">
+        <div class="paper-mast">★ &nbsp; The Economic Herald &nbsp; ★</div>
+        <div id="paper-idle" class="paper-idle" id="paper-phase">No major events — adjust policy as needed, then advance the quarter.</div>
+        <div id="paper-event" style="display:none">
+          <div class="paper-hl" id="paper-hl"></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
+            <div class="paper-sub" id="paper-sub"></div>
+            <div style="font-family:'DM Mono',monospace;font-size:.58rem;color:var(--ink3);white-space:nowrap;margin-left:12px;" id="paper-age"></div>
+          </div>
+        </div>
+      </div>
+      <div id="bottom-row">
+        <button id="advanceBtn" onclick="advanceRound()">Advance to Q<span id="next-q">1</span> →</button>
+        <div class="coord-box">
+          <span class="coord-lbl">Coordination</span>
+          <div class="coord-track"><div class="coord-fill" id="coord-fill" style="width:50%"></div></div>
+          <span class="coord-pct" id="coord-pct">—</span>
+          <span class="coord-note" id="coord-note"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monetary -->
+    <div class="side">
+      <div class="side-hdr m">
+        <div class="sh-lbl m">Player 2</div>
+        <div class="sh-title">Monetary Policy</div>
+      </div>
+      <div class="side-body">
+        <div class="sl-card">
+          <div class="sl-top"><span class="sl-name">Open Market Ops</span><span class="sl-keys">O ↑ &nbsp; L ↓</span></div>
+          <div class="sl-track"><div class="sl-fill sf-m" id="money-fill" style="width:50%"></div></div>
+          <div class="sl-lbls"><span>Sell Bonds</span><span id="money-val">50</span><span>Buy Bonds</span></div>
+        </div>
+        <div class="sl-card">
+          <div class="sl-top"><span class="sl-name">Fed Funds Rate</span><span class="sl-keys">I ↑ &nbsp; K ↓</span></div>
+          <div class="sl-track"><div class="sl-fill sf-m" id="rate-fill" style="width:50%"></div></div>
+          <div class="sl-lbls"><span>0% (Low)</span><span id="rate-val">50</span><span>10% (High)</span></div>
+          <div style="text-align:center;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--teal);margin-top:3px;">≈ <span id="rate-pct">5.0</span>%</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════ END SCREEN ══════ -->
+<div id="endscreen">
+  <div class="end-wrap">
+    <div class="end-title">Final Assessment</div>
+    <div class="end-sub">Simulation Complete — 36 Quarters</div>
+    <div class="grade-row">
+      <div class="grade-card" style="background:var(--gold-lt);border-color:#dfc868">
+        <div class="gc-lbl">Fiscal Player</div>
+        <div class="gc-letter" id="grd-fiscal">—</div>
+        <div class="gc-detail" id="grd-fiscal-det"></div>
+      </div>
+      <div class="grade-card">
+        <div class="gc-lbl">Coordination</div>
+        <div class="gc-letter" id="grd-coord">—</div>
+        <div class="gc-detail" id="grd-coord-det"></div>
+      </div>
+      <div class="grade-card" style="background:var(--teal-lt);border-color:#8dd5c8">
+        <div class="gc-lbl">Monetary Player</div>
+        <div class="gc-letter" id="grd-monetary">—</div>
+        <div class="gc-detail" id="grd-monetary-det"></div>
+      </div>
+    </div>
+    <div class="end-summary" id="end-summary"></div>
+    <button class="btn-primary" onclick="resetGame()">Play Again</button>
+  </div>
+</div>
+
+<script>
+const MAX_Q=36;
+const EVENTS={
+  // Q6 — first recession
+  6:[
+    {hl:'PANDEMIC PARALYZES ECONOMY',sub:'Consumer spending collapses as businesses shutter nationwide.',shock:{u:4.0,p:-1.0,g:-3.5}},
+    {hl:'BANKING CRISIS — CREDIT MARKETS FREEZE',sub:'Major bank failures halt lending across the economy.',shock:{u:3.0,p:-0.8,g:-3.0}},
+    {hl:'HOUSING BUBBLE BURSTS',sub:'Home values crater; consumer spending and construction grind to a halt.',shock:{u:2.8,p:-0.8,g:-2.8}}
+  ],
+  // Q14 — inflation shock
+  14:[
+    {hl:'DEMAND SURGE — ECONOMY OVERHEATING',sub:'Years of expansion push prices well above the Fed\'s target.',shock:{u:-1.2,p:3.2,g:1.8}},
+    {hl:'WAR MOBILIZATION DRIVES INFLATION',sub:'Defense spending surge tightens the labor market and pushes prices sharply higher.',shock:{u:-1.4,p:2.8,g:1.5}},
+    {hl:'CONSUMER CREDIT BOOM OVERHEATS SPENDING',sub:'Easy lending fuels a consumption surge, pushing inflation well past target.',shock:{u:-1.0,p:2.6,g:1.6}}
+  ],
+  // Q22 — stagflation (the hard one — no clean answer)
+  22:[
+    {hl:'OIL PRICES TRIPLE — STAGFLATION LOOMS',sub:'Energy shock hits supply chains: unemployment AND inflation rising simultaneously. No clean answer — discuss with your partner.',shock:{u:2.2,p:3.5,g:-2.0}},
+    {hl:'GLOBAL SUPPLY CHAIN MELTDOWN',sub:'Port closures spike costs while output falls. Both unemployment and inflation worsen at once.',shock:{u:1.8,p:2.8,g:-1.8}}
+  ],
+  // Q30 — late recession (tests whether players remember what worked the first time)
+  30:[
+    {hl:'FINANCIAL CONTAGION SPREADS FROM ABROAD',sub:'A foreign debt crisis ripples into domestic credit markets, freezing investment.',shock:{u:3.2,p:-0.9,g:-3.0}},
+    {hl:'TECH BUBBLE BURSTS — INVESTMENT COLLAPSES',sub:'Overvalued asset prices crash; business investment and consumer wealth plummet.',shock:{u:2.6,p:-0.7,g:-2.6}}
+  ]
+};
+const GCFG={
+  unemp:{min:0,max:14,gMin:3.5,gMax:5.5,color:'#c47d1a'},
+  infl: {min:-3,max:12,gMin:1.0,gMax:3.0,color:'#0e7c6b'},
+  rgdp: {min:-8,max:8, gMin:2.0,gMax:4.5,color:'#6b3d8a'}
+};
+
+let G={};
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+
+function initState(){
+  G={quarter:0,unemp:5.0,infl:2.0,rgdp:2.5,
+     taxRate:50,govSpend:50,moneySupply:50,interestRate:50,
+     unempH:[5.0],inflH:[2.0],rgdpH:[2.5],
+     pending:null,usedEvts:new Set(),eventAge:0,lastEventHl:'',lastEventSub:'',
+     outSum:0,fCorr:0,mCorr:0,cCorr:0,scored:0};
+}
+
+function fStance(){return (G.govSpend-50)/50-(G.taxRate-50)/50;}
+function mStance(){return (G.moneySupply-50)/50-(G.interestRate-50)/50;}
+
+document.addEventListener('keydown',e=>{
+  if(G.quarter>=MAX_Q)return;
+  const k=e.key.toLowerCase(),S=5;
+  if(k==='q')G.taxRate=clamp(G.taxRate+S,0,100);
+  else if(k==='a')G.taxRate=clamp(G.taxRate-S,0,100);
+  else if(k==='w')G.govSpend=clamp(G.govSpend+S,0,100);
+  else if(k==='s')G.govSpend=clamp(G.govSpend-S,0,100);
+  else if(k==='o')G.moneySupply=clamp(G.moneySupply+S,0,100);
+  else if(k==='l')G.moneySupply=clamp(G.moneySupply-S,0,100);
+  else if(k==='i')G.interestRate=clamp(G.interestRate+S,0,100);
+  else if(k==='k')G.interestRate=clamp(G.interestRate-S,0,100);
+  else return;
+  renderSliders();
+});
+
+function advanceRound(){
+  if(G.quarter>=MAX_Q)return;
+  document.getElementById('advanceBtn').disabled=true;
+  const fs=fStance(),ms=mStance(),ad=(fs+ms)*0.55;
+  G.rgdp +=ad*0.38; G.unemp-=ad*0.22; G.infl+=ad*0.28;
+  G.unemp+=(4.5-G.unemp)*0.12; G.infl+=(2.0-G.infl)*0.10; G.rgdp+=(2.5-G.rgdp)*0.10;
+  G.unemp+=(Math.random()-.5)*.28; G.infl+=(Math.random()-.5)*.20; G.rgdp+=(Math.random()-.5)*.22;
+  G.unemp=clamp(G.unemp,.5,18); G.infl=clamp(G.infl,-3,15); G.rgdp=clamp(G.rgdp,-9,9);
+  G.quarter++;
+  G.unempH.push(G.unemp); G.inflH.push(G.infl); G.rgdpH.push(G.rgdp);
+  scoreQ(fs,ms); applyEvent();
+  if(G.quarter>=MAX_Q){render();setTimeout(endGame,900);}
+  else{
+    render();
+    document.getElementById('advanceBtn').disabled=false;
+    document.getElementById('next-q').textContent=G.quarter+1;
+  }
+}
+
+function applyEvent(){
+  const pool=EVENTS[G.quarter]; if(!pool)return;
+  const av=pool.filter(e=>!G.usedEvts.has(e.hl)); if(!av.length)return;
+  const ev=av[Math.floor(Math.random()*av.length)];
+  G.usedEvts.add(ev.hl); G.pending=ev; G.eventAge=0;
+  G.lastEventHl=ev.hl; G.lastEventSub=ev.sub;
+  G.unemp=clamp(G.unemp+ev.shock.u,.5,18);
+  G.infl =clamp(G.infl +ev.shock.p,-3,15);
+  G.rgdp =clamp(G.rgdp +ev.shock.g,-9,9);
+  G.unempH[G.unempH.length-1]=G.unemp;
+  G.inflH[G.inflH.length-1]=G.infl;
+  G.rgdpH[G.rgdpH.length-1]=G.rgdp;
+}
+
+function scoreQ(fs,ms){
+  const o=isc(G.unemp,3.5,5.5,1.5,7.5)+isc(G.infl,1,3,0,5.5)+isc(G.rgdp,2,4.5,0,6.5);
+  G.outSum+=o/3; G.scored++;
+  const rec=G.unemp>5.8||G.rgdp<1, hot=G.infl>3.8, stag=rec&&hot;
+
+  // Stagflation: no correct answer exists — award full credit to both for any decision
+  if(stag){
+    G.fCorr+=1; G.mCorr+=1; G.cCorr+=1;
+    return;
+  }
+
+  // Individual scores: full credit for clearly correct, partial for borderline, 0 for wrong
+  // During recession: expansionary is correct
+  // During overheating: contractionary is correct
+  // During stable: staying near neutral is correct (generous band of ±0.8)
+  function dirScore(stance){
+    if(rec)  return stance> 0.15?1: stance>-0.15?0.5:0;   // expanding=1, neutral=0.5, contracting=0
+    if(hot)  return stance<-0.15?1: stance< 0.15?0.5:0;   // contracting=1, neutral=0.5, expanding=0
+    // stable: reward being near neutral; partial credit for mild lean, none for strong push
+    const a=Math.abs(stance);
+    return a<0.4?1: a<0.8?0.5:0;
+  }
+
+  const fScore=dirScore(fs), mScore=dirScore(ms);
+  G.fCorr+=fScore; G.mCorr+=mScore;
+
+  // Coordination: did both players move in the same correct direction?
+  // Give full coord credit if both are correct, partial if one is, none if they conflict
+  const fRight=fScore>=0.5, mRight=mScore>=0.5;
+  const fWrong=fScore===0,  mWrong=mScore===0;
+  if(fRight&&mRight) G.cCorr+=1;
+  else if(fRight||mRight) G.cCorr+=0.5;
+  else if(fWrong&&mWrong) G.cCorr+=0;
+  // if one wrong, one right → already handled by fRight||mRight above
+}
+function isc(v,g0,g1,w0,w1){return v>=g0&&v<=g1?1:v>=w0&&v<=w1?.5:0;}
+
+function render(){
+  setInd('unemp-val',G.unemp,3.5,5.5,1.5,7.5);
+  setInd('infl-val',G.infl,1,3,0,5.5);
+  setInd('rgdp-val',G.rgdp,2,4.5,0,6.5);
+  document.getElementById('qtr-num').textContent=G.quarter;
+  const crisis=G.unemp>8||G.infl>6||G.rgdp<-2||G.infl<-.5;
+  const warn=G.unemp>5.8||G.infl>3.5||G.rgdp<1.5||G.unemp<3;
+  const pill=document.getElementById('status-pill');
+  pill.className='spill '+(crisis?'sp-crisis':warn?'sp-warn':'sp-ok');
+  pill.textContent=crisis?'Crisis':warn?'Caution':'Stable';
+  // Rate % readout
+  document.getElementById('rate-pct').textContent=(G.interestRate/10).toFixed(1);
+
+  // Newspaper — persist headline for up to 5 quarters after event
+  if(G.pending){
+    G.eventAge=0;
+    document.getElementById('paper-idle').style.display='none';
+    document.getElementById('paper-event').style.display='block';
+    document.getElementById('paper-hl').textContent=G.pending.hl;
+    document.getElementById('paper-sub').textContent=G.pending.sub;
+    document.getElementById('paper-age').textContent='';
+    document.getElementById('paper').classList.add('paper-flash');
+    setTimeout(()=>document.getElementById('paper').classList.remove('paper-flash'),600);
+    G.pending=null;
+  } else if(G.lastEventHl && G.eventAge<5){
+    G.eventAge++;
+    document.getElementById('paper-idle').style.display='none';
+    document.getElementById('paper-event').style.display='block';
+    document.getElementById('paper-hl').textContent=G.lastEventHl;
+    document.getElementById('paper-sub').textContent=G.lastEventSub;
+    document.getElementById('paper-age').textContent=G.eventAge===1?'1 quarter later':`${G.eventAge} quarters later`;
+  } else {
+    document.getElementById('paper-event').style.display='none';
+    document.getElementById('paper-idle').style.display='block';
+    // Dynamic phase diagnosis
+    const rec=G.unemp>5.8||G.rgdp<1, hot=G.infl>3.8, stag=rec&&hot;
+    let phase;
+    if(stag)        phase='⚠ Stagflation — unemployment and inflation both elevated. No clean policy fix exists.';
+    else if(rec)    phase='↙ Recessionary pressure — unemployment rising, growth slowing. Economy needs stimulus.';
+    else if(hot)    phase='↗ Economy overheating — inflation above target. Contractionary policy needed.';
+    else if(G.unemp<3.5) phase='↗ Labor market very tight — watch for wage-driven inflation.';
+    else            phase='✓ Economy near target — hold course and monitor for signs of drift.';
+    document.getElementById('paper-idle').textContent=phase;
+  }
+  drawAllGraphs();
+  const q=G.scored||1, cp=G.cCorr/q;
+  document.getElementById('coord-fill').style.width=(cp*100)+'%';
+  document.getElementById('coord-pct').textContent=G.scored>0?Math.round(cp*100)+'%':'—';
+  const cn=document.getElementById('coord-note');
+  if(G.scored>0){cn.textContent=cp>=.7?'✓ Aligned':cp>=.45?'Mixed':'✗ Conflicting';cn.style.color=cp>=.7?'var(--green)':cp>=.45?'var(--warn)':'var(--red)';}
+}
+
+function drawPhillips(){
+  const c=document.getElementById('g-phillips'); if(!c)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=c.clientWidth||400, H=c.clientHeight||90;
+  c.width=W*dpr; c.height=H*dpr;
+  const ctx=c.getContext('2d'); ctx.scale(dpr,dpr);
+  const PL=28,PR=10,PT=5,PB=18, pw=W-PL-PR, ph=H-PT-PB;
+  // x = unemployment 0–14, y = inflation -3–12
+  const ux0=0,ux1=14, uy0=-3,uy1=12;
+  const px=u=>PL+(u-ux0)/(ux1-ux0)*pw;
+  const py=v=>PT+ph-(v-uy0)/(uy1-uy0)*ph;
+  const cx=x=>Math.max(PL,Math.min(PL+pw,x));
+  const cy=y=>Math.max(PT,Math.min(PT+ph,y));
+
+  ctx.fillStyle='#fffdf8'; ctx.fillRect(0,0,W,H);
+
+  // Target zone box: unemp 3.5–5.5, infl 1–3
+  ctx.fillStyle='rgba(26,122,74,.1)';
+  ctx.fillRect(cx(px(3.5)),cy(py(3)),cx(px(5.5))-cx(px(3.5)),cy(py(1))-cy(py(3)));
+  ctx.setLineDash([3,3]); ctx.strokeStyle='rgba(26,122,74,.3)'; ctx.lineWidth=.8;
+  ctx.strokeRect(cx(px(3.5)),cy(py(3)),cx(px(5.5))-cx(px(3.5)),cy(py(1))-cy(py(3)));
+  ctx.setLineDash([]);
+
+  // Axis lines
+  ctx.strokeStyle='rgba(0,0,0,.1)'; ctx.lineWidth=.8;
+  ctx.beginPath(); ctx.moveTo(PL,PT); ctx.lineTo(PL,PT+ph); ctx.lineTo(PL+pw,PT+ph); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle='#9a8f80'; ctx.font='7px DM Mono'; ctx.textAlign='center';
+  ctx.fillText('Unemployment %',PL+pw/2,H-2);
+  // x ticks
+  [0,3.5,5.5,7,10.5,14].forEach(v=>{
+    ctx.fillText(v,cx(px(v)),PT+ph+10);
+  });
+  ctx.textAlign='right';
+  // y ticks
+  [-3,0,3,6,9,12].forEach(v=>{
+    ctx.fillText(v,PL-3,cy(py(v))+2.5);
+  });
+  // y axis label (rotated)
+  ctx.save(); ctx.translate(9,PT+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center'; ctx.fillText('Inflation %',0,0); ctx.restore();
+
+  if(G.unempH.length<2){return;}
+
+  // Draw trail dots — older = more faded
+  const n=G.unempH.length;
+  for(let i=1;i<n;i++){
+    const u=G.unempH[i], p=G.inflH[i];
+    const isCurrent=(i===n-1);
+    const age=n-1-i;
+    const alpha=isCurrent?1:Math.max(.15,1-age*.07);
+    // Color: green=good zone, gold=warn, red=bad
+    const inZone=u>=3.5&&u<=5.5&&p>=1&&p<=3;
+    const nearZone=u>=1.5&&u<=7.5&&p>=0&&p<=5.5;
+    const color=inZone?`rgba(26,122,74,${alpha})`:nearZone?`rgba(184,92,0,${alpha})`:`rgba(184,50,37,${alpha})`;
+    ctx.beginPath();
+    ctx.arc(cx(px(u)),cy(py(p)),isCurrent?4.5:2.5,0,Math.PI*2);
+    ctx.fillStyle=color;
+    ctx.fill();
+    // Connect with faint line
+    if(i>1){
+      const pu=G.unempH[i-1], pp=G.inflH[i-1];
+      ctx.beginPath();
+      ctx.moveTo(cx(px(pu)),cy(py(pp)));
+      ctx.lineTo(cx(px(u)),cy(py(p)));
+      ctx.strokeStyle=`rgba(150,140,130,${alpha*.4})`;
+      ctx.lineWidth=1;
+      ctx.stroke();
+    }
+  }
+  // Label current dot
+  if(n>1){
+    const u=G.unempH[n-1], p=G.inflH[n-1];
+    ctx.fillStyle='var(--ink)'; ctx.font='bold 7px DM Mono'; ctx.textAlign='left';
+    ctx.fillText('Q'+G.quarter,cx(px(u))+6,cy(py(p))+3);
+  }
+}
+
+function renderSliders(){
+  sl('tax-fill','tax-val',G.taxRate); sl('spend-fill','spend-val',G.govSpend);
+  sl('money-fill','money-val',G.moneySupply); sl('rate-fill','rate-val',G.interestRate);
+  document.getElementById('rate-pct').textContent=(G.interestRate/10).toFixed(1);
+}
+function sl(f,v,p){document.getElementById(f).style.width=p+'%';document.getElementById(v).textContent=p;}
+function setInd(id,val,g0,g1,w0,w1){
+  const el=document.getElementById(id);
+  el.textContent=val.toFixed(1)+'%';
+  el.className='ind-num '+(val>=g0&&val<=g1?'good':val>=w0&&val<=w1?'warn':'bad');
+}
+
+function drawAllGraphs(){
+  drawG('g-unemp',G.unempH,GCFG.unemp);
+  drawG('g-infl', G.inflH, GCFG.infl);
+  drawG('g-rgdp', G.rgdpH, GCFG.rgdp);
+  drawPhillips();
+}
+function drawG(id,hist,cfg){
+  const c=document.getElementById(id); if(!c)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=c.clientWidth||150, H=c.clientHeight||82;
+  c.width=W*dpr; c.height=H*dpr;
+  const ctx=c.getContext('2d'); ctx.scale(dpr,dpr);
+  const PL=28,PR=6,PT=5,PB=14, pw=W-PL-PR, ph=H-PT-PB, rng=cfg.max-cfg.min;
+  const tx=i=>PL+(i/MAX_Q)*pw;
+  const ty=v=>PT+ph-((v-cfg.min)/rng)*ph;
+  const cy=y=>Math.max(PT,Math.min(PT+ph,y));
+  ctx.fillStyle='#fffdf8'; ctx.fillRect(0,0,W,H);
+  const ygt=cy(ty(cfg.gMax)), ygb=cy(ty(cfg.gMin));
+  ctx.fillStyle='rgba(26,122,74,.1)'; ctx.fillRect(PL,ygt,pw,ygb-ygt);
+  ctx.setLineDash([3,4]); ctx.strokeStyle='rgba(26,122,74,.28)'; ctx.lineWidth=.8;
+  [ygt,ygb].forEach(y=>{ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+pw,y);ctx.stroke();});
+  ctx.setLineDash([]);
+  for(let i=0;i<=4;i++){
+    const v=cfg.min+(i/4)*rng, y=cy(ty(v));
+    ctx.strokeStyle='rgba(0,0,0,.05)'; ctx.lineWidth=.7;
+    ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+pw,y);ctx.stroke();
+    ctx.fillStyle='#9a8f80'; ctx.font='7px DM Mono'; ctx.textAlign='right';
+    ctx.fillText(Number.isInteger(v)?v:v.toFixed(1),PL-3,y+2.5);
+  }
+  ctx.fillStyle='#b0a898'; ctx.font='7px DM Mono'; ctx.textAlign='center';
+  [0,9,18,27,36].forEach(q=>ctx.fillText(q===0?'Q0':'Q'+q,tx(q),H-2));
+  if(hist.length<2)return;
+  ctx.beginPath(); ctx.strokeStyle=cfg.color; ctx.lineWidth=2;
+  hist.forEach((v,i)=>{const x=tx(i),y=cy(ty(v));i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+  const lv=hist[hist.length-1],lx=tx(hist.length-1),ly=cy(ty(lv));
+  ctx.beginPath();ctx.arc(lx,ly,3.5,0,Math.PI*2);ctx.fillStyle=cfg.color;ctx.fill();
+}
+
+function calcGrades(){
+  const q=G.scored||1, out=G.outSum/(q*3);
+  const fp=G.fCorr/q, mp=G.mCorr/q, cp=G.cCorr/q;
+  // Grades are primarily about POLICY DIRECTION (80/90%), not outcomes.
+  // Outcomes can be unfairly wrecked by supply shocks outside players' control.
+  return{
+    fiscal:  {letter:ltr(out*.20+fp*.80), pct:out*.20+fp*.80},
+    monetary:{letter:ltr(out*.20+mp*.80), pct:out*.20+mp*.80},
+    coord:   {letter:ltr(out*.10+cp*.90), pct:out*.10+cp*.90},
+    outcome:out
+  };
+}
+function ltr(p){
+  if(p>=.88)return'A';  if(p>=.80)return'A−';
+  if(p>=.72)return'B+'; if(p>=.64)return'B'; if(p>=.56)return'B−';
+  if(p>=.46)return'C';  if(p>=.36)return'D';
+  return'F';
+}
+function gcls(l){if(l.startsWith('A'))return'gA';if(l.startsWith('B'))return'gB';if(l.startsWith('C'))return'gC';if(l.startsWith('D'))return'gD';return'gF';}
+function gfb(t,p){
+  const pc=Math.round(p*100);
+  if(t==='fiscal') return pc>=80?'Tax and spending tools used effectively — strong AD management.':pc>=60?'Policy direction usually right, but some missed responses.':'Tax/spending moves were often misaligned with economic conditions.';
+  if(t==='monetary') return pc>=80?'Money supply and rate decisions were well-timed throughout.':pc>=60?'Monetary tools headed in the right direction most rounds.':'Rate and money supply changes frequently pulled AD the wrong way.';
+  return pc>=80?'Both players consistently moved AD in the same direction. Great teamwork.':pc>=60?'Coordination was mostly solid, but a few conflicting rounds hurt.':'Players often worked against each other, weakening the combined policy response.';
+}
+
+function endGame(){
+  const gr=calcGrades();
+  ['fiscal','monetary','coord'].forEach(t=>{
+    const g=gr[t];
+    const lEl=document.getElementById('grd-'+t), dEl=document.getElementById('grd-'+t+'-det');
+    lEl.textContent=g.letter; lEl.className='gc-letter '+gcls(g.letter);
+    dEl.textContent=gfb(t,g.pct);
+  });
+  const q=G.scored||1;
+  const fPct=Math.round((G.fCorr/q)*100);
+  const mPct=Math.round((G.mCorr/q)*100);
+  const cPct=Math.round((G.cCorr/q)*100);
+  const avgDecision=Math.round(((G.fCorr+G.mCorr)/(q*2))*100);
+  let s=`Policy decisions were correct ${avgDecision}% of rounds (fiscal ${fPct}%, monetary ${mPct}%, coordination ${cPct}%). `;
+  if(avgDecision>=80)s+='Both players reliably identified whether the economy needed expansion or contraction — that\'s the core skill.';
+  else if(avgDecision>=60)s+='Good instincts most of the time. Watch for rounds where the economy was overheating but policy stayed expansionary, or vice versa.';
+  else s+='Focus on reading the indicators: high unemployment/low RGDP → expand; high inflation → contract. External shocks don\'t change the direction — just the urgency.';
+  document.getElementById('end-summary').textContent=s;
+  setTimeout(()=>{document.getElementById('endscreen').style.display='flex';},400);
+}
+
+function startGame(){
+  document.getElementById('intro').style.display='none';
+  document.getElementById('app').style.display='flex';
+  initState(); render(); renderSliders();
+}
+function resetGame(){
+  document.getElementById('endscreen').style.display='none';
+  document.getElementById('intro').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('paper-idle').style.display='block';
+  document.getElementById('paper-event').style.display='none';
+  document.getElementById('paper-idle').textContent='No major events — adjust policy as needed, then advance the quarter.';
+}
+</script>
+</body>
+</html>
